@@ -1,0 +1,25 @@
+{
+  "name": "PG2000/SessionHandler",
+  "description": "Common Session Handler (session.save_handler) for PHP",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "PG2000",
+      "email": "PG2000@users.noreply.github.com"
+    }
+  ],
+  "autoload" : {
+    "psr-4" : {
+      "PG2000\\SessionHandler\\" : "src/SessionHandler",
+      "PG2000\\SessionHandler\\Tests\\" : "tests/SessionHandler"
+    }
+  },
+  "require" : {
+    "php" : ">=5.4"
+  },
+  "require-dev": {
+    "predis/predis": "1.0.*",
+    "phpunit/phpunit": "~4.5"
+  }
+}
