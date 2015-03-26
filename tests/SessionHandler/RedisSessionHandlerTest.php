@@ -8,11 +8,11 @@
 
 namespace PG2000\SessionHandler\Tests;
 
-
 use PG2000\SessionHandler\RedisSessionHandler;
 use Predis\Client;
 
-class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase {
+class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
+{
 
     /**
      * @var RedisSessionHandler
@@ -39,8 +39,6 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase {
         $sessionId = "xqwertAsertzuqad";
         $expected = '__TEST__';
 
-        $this->object->write($sessionId,$expected);
-
-
+        $this->object->write($sessionId, $expected);
     }
 }
