@@ -4,11 +4,11 @@ namespace PG2000\SessionHandler;
 
 /**
  * Redis based session storage with session locking support
-*/
+ */
 class RedisSessionHandler implements \SessionHandlerInterface
 {
     /**
-     * @var \Predis\Client|\Redis
+     * @var \Redis
      */
     protected $redis;
 
@@ -56,23 +56,19 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * Redis session storage constructor
      *
-     * @param \Redis $redis         Redis database connection
-     * @param array                 $options Session options
-     * @param string                $prefix  Prefix to use when writing session data
+     * @param \Redis $redis Redis database connection
      */
-    public function __construct(\Redis $redis, array $options = array(), $prefix = 'PHPREDIS_SESSION', $locking = true, $spinLockWait = 150000)
+    public function __construct(\Redis $redis)
     {
         $this->redis = $redis;
         $this->connectRedis(ini_get('session.save_path'));
 
         $this->ttl = $this->getSessionMaxLifetime();
 
-        $this->prefix = $prefix;
-
-        $this->locking = $locking;
+        $this->locking = true;
         $this->locked = false;
         $this->lockKey = null;
-        $this->spinLockWait = $spinLockWait;
+        $this->spinLockWait = 150000;
         $this->lockMaxWait = ini_get('max_execution_time');
 
         if (!$this->lockMaxWait) {
@@ -92,12 +88,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
     {
         $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
 
-        $this->lockKey = $sessionId.'.lock';
-        for ($i=0;$i<$attempts;$i++) {
-            $success = $this->redis->setnx($this->prefix.$this->lockKey, '1');
+        $this->lockKey = $sessionId . '.lock';
+        for ($i = 0; $i < $attempts; $i++) {
+            $success = $this->redis->setnx($this->prefix . $this->lockKey, '1');
             if ($success) {
                 $this->locked = true;
-                $this->redis->expire($this->prefix.$this->lockKey, $this->lockMaxWait + 1);
+                $this->redis->expire($this->prefix . $this->lockKey, $this->lockMaxWait + 1);
                 return true;
             }
             usleep($this->spinLockWait);
@@ -109,7 +105,7 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
     private function unlockSession()
     {
-        $this->redis->del($this->prefix.$this->lockKey);
+        $this->redis->del($this->prefix . $this->lockKey);
         $this->locked = false;
     }
 
@@ -214,13 +210,12 @@ class RedisSessionHandler implements \SessionHandlerInterface
             if ($this->isTcpSessionSavePath($parsedUrl)) {
                 //TCP way
                 $this->redis->connect($parsedUrl['host'], $parsedUrl['port']);
-            } elseif($this->isSockSessionSavePath($parsedUrl)){
+            } elseif ($this->isSockSessionSavePath($parsedUrl)) {
                 //Sock way
                 $this->redis->connect($parsedUrl['path']);
             } else {
                 throw new \Exception('The connection string is malformed');
             }
-
         } catch (\Exception $exc) {
             throw new \Exception($exc->getMessage(), $exc->getCode());
         }
@@ -261,5 +256,4 @@ class RedisSessionHandler implements \SessionHandlerInterface
     {
         return (int)ini_get('session.gc_maxlifetime');
     }
-
 }

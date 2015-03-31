@@ -9,6 +9,10 @@ use PG2000\SessionHandler\RedisSessionHandler;
  */
 class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @var \Redis | \PHPUnit_Framework_MockObject_MockObject
+     */
     private $redis;
 
     protected function setUp()
@@ -27,9 +31,15 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->once())
             ->method('get')
-            ->with($this->equalTo('session:_symfony'));
+            ->with($this->equalTo('PHPREDIS_SESSION:_symfony'));
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis);
+
+        $reflection = new \ReflectionObject($handler);
+        $lockMaxWaitProperty = $reflection->getProperty('locking');
+        $lockMaxWaitProperty->setAccessible(true);
+        $lockMaxWaitProperty->setValue($handler, false);
+
         $handler->read('_symfony');
     }
 
@@ -38,9 +48,9 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $this->redis
             ->expects($this->once())
             ->method('del')
-            ->with($this->equalTo('session:_symfony'));
+            ->with($this->equalTo('PHPREDIS_SESSION:_symfony'));
 
-        $handler = new RedisSessionHandler($this->redis, array(), 'session', false);
+        $handler = new RedisSessionHandler($this->redis);
         $handler->destroy('_symfony');
     }
 
@@ -85,7 +95,7 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
         $handler->read('_symfony');
     }
 
-    public function testRedisHandlerWillConnectRedisclientWithParameterFromIni()
+    public function testRedisHandlerWillConnectRedisClientWithParameterFromIni()
     {
         ini_set('session.save_path', 'tcp://127.0.0.1:6379');
         $this->redis = $this->getMock('\Redis');
