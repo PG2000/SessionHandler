@@ -1,5 +1,5 @@
 {
-  "name": "PG2000/SessionHandler",
+  "name": "pg2000/session-handler",
   "description": "Common Redis Session Handler (session.save_handler) for PHP",
   "minimum-stability": "stable",
   "license": "MIT",
@@ -19,6 +19,6 @@
     "php" : ">=5.4"
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.5"
+    "phpunit/phpunit": "4.1.*"
   }
 }
