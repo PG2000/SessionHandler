@@ -195,8 +195,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
     private function connectRedis($sessionSavePath)
     {
         try {
-
-            //Prepare for parse_url()
             if (strncmp($sessionSavePath, "unix:", strlen("unix:") - 1) === 0) {
                 $sessionSavePath = str_replace('unix:', 'file:', $sessionSavePath);
             }
@@ -204,10 +202,8 @@ class RedisSessionHandler implements \SessionHandlerInterface
             $parsedUrl = $this->getParsedUrl($sessionSavePath);
 
             if ($this->isTcpSessionSavePath($parsedUrl)) {
-                //TCP way
                 $this->redis->connect($parsedUrl['host'], $parsedUrl['port']);
             } elseif ($this->isSockSessionSavePath($parsedUrl)) {
-                //Sock way
                 $this->redis->connect($parsedUrl['path']);
             } else {
                 throw new \Exception('The connection string is malformed');
