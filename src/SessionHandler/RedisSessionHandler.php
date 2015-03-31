@@ -30,22 +30,22 @@ class RedisSessionHandler implements \SessionHandlerInterface
     /**
      * @var boolean Indicates an sessions should be locked
      */
-    private $locking;
+    private $locking = true;
 
     /**
      * @var boolean Indicates an active session lock
      */
-    private $locked;
+    private $locked = false;
 
     /**
      * @var string Session lock key
      */
-    private $lockKey;
+    private $lockKey = null;
 
     /**
      * @var integer Microseconds to wait between acquire lock tries
      */
-    private $spinLockWait;
+    private $spinLockWait = 150000;
 
     /**
      * @var integer Maximum amount of seconds to wait for the lock
@@ -65,10 +65,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
 
         $this->ttl = $this->getSessionMaxLifetime();
 
-        $this->locking = true;
-        $this->locked = false;
-        $this->lockKey = null;
-        $this->spinLockWait = 150000;
         $this->lockMaxWait = ini_get('max_execution_time');
 
         if (!$this->lockMaxWait) {
