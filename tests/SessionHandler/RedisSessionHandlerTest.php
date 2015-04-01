@@ -7,7 +7,7 @@ use PG2000\SessionHandler\RedisSessionHandler;
 /**
  * RedisSessionHandlerTest
  */
-class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
+final class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -15,15 +15,31 @@ class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
      */
     private $redis;
 
+    /**
+     * @var array
+     */
+    private $defaultPhpIniSettings = [
+        'session.save_path' => '/tmp'
+    ];
+
+
     protected function setUp()
     {
+        $this->resetPhpIniSettings();
         ini_set('session.save_path', 'tcp://127.0.0.1:6379');
-        $this->redis = $this->getMock('\Redis', array('get', 'set', 'setex', 'del', 'setnx'));
+        $this->redis = $this->getMock('\Redis', array('get', 'set', 'setex', 'del', 'setnx', 'connect'));
     }
 
     protected function tearDown()
     {
         unset($this->redis);
+    }
+
+    protected function resetPhpIniSettings()
+    {
+        foreach ($this->defaultPhpIniSettings as $key => $setting) {
+            ini_set($key, $setting);
+        }
     }
 
     public function testSessionReading()

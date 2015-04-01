@@ -80,31 +80,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
         return true;
     }
 
-    private function lockSession($sessionId)
-    {
-        $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
-
-        $this->lockKey = $sessionId . '.lock';
-        for ($i = 0; $i < $attempts; $i++) {
-            $success = $this->redis->setnx($this->prefix . $this->lockKey, '1');
-            if ($success) {
-                $this->locked = true;
-                $this->redis->expire($this->prefix . $this->lockKey, $this->lockMaxWait + 1);
-                return true;
-            }
-            usleep($this->spinLockWait);
-        }
-
-        return false;
-    }
-
-
-    private function unlockSession()
-    {
-        $this->redis->del($this->prefix . $this->lockKey);
-        $this->locked = false;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -166,21 +141,6 @@ class RedisSessionHandler implements \SessionHandlerInterface
     }
 
     /**
-     * Prepends the session ID with a user-defined prefix (if any).
-     * @param string $sessionId session ID
-     *
-     * @return string prefixed session ID
-     */
-    protected function getRedisKey($sessionId)
-    {
-        if (empty($this->prefix)) {
-            return $sessionId;
-        }
-
-        return $this->prefix . ':' . $sessionId;
-    }
-
-    /**
      * Destructor
      */
     public function __destruct()
@@ -211,6 +171,46 @@ class RedisSessionHandler implements \SessionHandlerInterface
         } catch (\Exception $exc) {
             throw new \Exception($exc->getMessage(), $exc->getCode());
         }
+    }
+
+    /**
+     * Prepends the session ID with a user-defined prefix (if any).
+     * @param string $sessionId session ID
+     *
+     * @return string prefixed session ID
+     */
+    private function getRedisKey($sessionId)
+    {
+        if (empty($this->prefix)) {
+            return $sessionId;
+        }
+
+        return $this->prefix . ':' . $sessionId;
+    }
+
+    private function lockSession($sessionId)
+    {
+        $attempts = (1000000 / $this->spinLockWait) * $this->lockMaxWait;
+
+        $this->lockKey = $sessionId . '.lock';
+        for ($i = 0; $i < $attempts; $i++) {
+            $success = $this->redis->setnx($this->prefix . $this->lockKey, '1');
+            if ($success) {
+                $this->locked = true;
+                $this->redis->expire($this->prefix . $this->lockKey, $this->lockMaxWait + 1);
+                return true;
+            }
+            usleep($this->spinLockWait);
+        }
+
+        return false;
+    }
+
+
+    private function unlockSession()
+    {
+        $this->redis->del($this->prefix . $this->lockKey);
+        $this->locked = false;
     }
 
     /**

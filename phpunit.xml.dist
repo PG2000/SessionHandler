@@ -1,8 +1,11 @@
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
-        stopOnError ="true"
-        stopOnFailure="true"
+        verbose="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        syntaxCheck="true">
         bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="PG2000\SessionHandler">
