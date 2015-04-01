@@ -19,11 +19,12 @@ final class RedisSessionHandlerTest extends \PHPUnit_Framework_TestCase
      * @var array
      */
     private $defaultPhpIniSettings = [
-        'session.save_path' => '/tmp'
+        'session.save_path' => ''
     ];
 
     protected function setUp()
     {
+        $this->defaultPhpIniSettings['session.save_path'] = ini_get('session.save_path');
         ini_set('session.save_path', 'tcp://127.0.0.1:6379');
         $this->redis = $this->getMock('\Redis', array('get', 'set', 'setex', 'del', 'setnx', 'connect'));
     }
