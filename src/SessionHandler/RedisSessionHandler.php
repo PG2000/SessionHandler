@@ -229,7 +229,10 @@ class RedisSessionHandler implements \SessionHandlerInterface
      */
     private function isTcpSessionSavePath($parsedUrl)
     {
-        return isset($parsedUrl['scheme']) && $parsedUrl['scheme'] === 'tcp' && isset($parsedUrl['host']) || isset($parsedUrl['port']);
+        return isset($parsedUrl['scheme'])
+        && $parsedUrl['scheme'] === 'tcp'
+        && isset($parsedUrl['host'])
+        || isset($parsedUrl['port']);
     }
 
     /**
