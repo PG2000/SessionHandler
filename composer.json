@@ -11,8 +11,7 @@
   ],
   "autoload" : {
     "psr-4" : {
-      "PG2000\\SessionHandler\\" : "src/SessionHandler",
-      "PG2000\\SessionHandler\\Tests\\" : "tests/SessionHandler"
+      "PG2000\\SessionHandler\\" : "src/SessionHandler"
     }
   },
   "require" : {
