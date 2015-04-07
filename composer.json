@@ -14,7 +14,10 @@
       "PG2000\\SessionHandler\\" : "src/SessionHandler"
     }
   },
+  "require" : {
+    "php" : ">=5.4"
+  },
   "require-dev": {
-    "phpunit/phpunit": "4.1.2"
+    "phpunit/phpunit": ">=4.1.2"
   }
 }
